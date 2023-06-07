@@ -11,6 +11,7 @@
   "author": "Eduardo Gomes",
   "license": "ISC",
   "dependencies": {
+    "@fastify/static": "^6.10.2",
     "crypto": "^1.0.1",
     "dotenv": "^16.1.4",
     "fastify": "^4.17.0",

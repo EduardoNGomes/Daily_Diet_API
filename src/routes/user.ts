@@ -7,13 +7,23 @@ export async function userRouter(app: FastifyInstance) {
     '/users',
     { preHandler: upload.single('file') },
     (request, reply) => {
-      console.log(request.file)
       const bodySchema = z.object({
         name: z.string(),
+        email: z.string(),
+        password: z.string(),
       })
       const { name } = bodySchema.parse(request.body)
+      const image = request.file
 
-      return reply.status(200).send(name)
+      return reply.send(name)
     },
   )
+  app.get('/users/avatar/:avatarUrl', (request, reply) => {
+    const paramsSchema = z.object({
+      avatarUrl: z.string(),
+    })
+    const { avatarUrl } = paramsSchema.parse(request.params)
+
+    return reply.sendFile(avatarUrl)
+  })
 }
