@@ -92,6 +92,8 @@ export async function userRouter(app: FastifyInstance) {
 
     return reply.send('Dados do usuario atualizados com sucesso')
   })
+
+  // Get user Image
   app.get('/users/avatar/:avatarUrl', (request, reply) => {
     const paramsSchema = z.object({
       avatarUrl: z.string(),
