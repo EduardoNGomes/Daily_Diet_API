@@ -6,6 +6,7 @@ import { join } from 'path'
 import jwt from '@fastify/jwt'
 import cookies from '@fastify/cookie'
 import { authRoutes } from './routes/auth'
+import { mealsRoutes } from './routes/meals'
 
 const app = fastify()
 
@@ -19,8 +20,9 @@ app.register(require('@fastify/static'), {
   root: join(__dirname, '../uploads'),
 })
 // Routes
-app.register(userRouter)
 app.register(authRoutes)
+app.register(userRouter)
+app.register(mealsRoutes)
 
 app
   .listen({
