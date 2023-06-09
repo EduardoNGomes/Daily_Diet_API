@@ -2,6 +2,7 @@ import { FastifyInstance } from 'fastify'
 import { z } from 'zod'
 import { knex } from '../configs/knex'
 import { randomUUID } from 'crypto'
+
 export async function mealsRoutes(app: FastifyInstance) {
   app.addHook('onRequest', async (request, reply) => {
     try {
@@ -36,9 +37,21 @@ export async function mealsRoutes(app: FastifyInstance) {
     const { token } = request.cookies
     const { sub } = app.jwt.decode(token!)
 
-    const meals = await knex('meals').where({ user_id: sub })
+    const meals = await knex('meals')
+      .where({ user_id: sub })
+      .orderBy('updated_at', 'asc')
+      .groupBy('updated_at')
 
-    reply.status(200).send(meals)
+    const groupedData = meals.reduce((acc: any, item) => {
+      const date = item.updated_at.split(' ')[0] // Extrai a data (parte antes do espaço)
+      if (!acc[date]) {
+        acc[date] = []
+      }
+      acc[date].push(item)
+      return acc
+    }, {})
+
+    reply.status(200).send(groupedData)
   })
 
   app.get('/meals/:id', async (request, reply) => {
