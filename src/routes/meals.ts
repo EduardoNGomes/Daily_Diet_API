@@ -14,7 +14,7 @@ export async function mealsRoutes(app: FastifyInstance) {
     const bodySchema = z.object({
       name: z.string(),
       description: z.string().optional(),
-      isOnDiet: z.boolean().optional(),
+      isOnDiet: z.boolean(),
     })
     const { token } = request.cookies
     const { sub } = app.jwt.decode(token!)
@@ -30,5 +30,32 @@ export async function mealsRoutes(app: FastifyInstance) {
     })
 
     reply.status(201).send('Prato criado com sucesso')
+  })
+
+  app.get('/meals', async (request, reply) => {
+    const { token } = request.cookies
+    const { sub } = app.jwt.decode(token!)
+
+    const meals = await knex('meals').where({ user_id: sub })
+
+    reply.status(200).send(meals)
+  })
+
+  app.get('/meals/:id', async (request, reply) => {
+    const paramsSchema = z.object({
+      id: z.string().uuid(),
+    })
+
+    const { id } = paramsSchema.parse(request.params)
+
+    const { token } = request.cookies
+    const { sub } = app.jwt.decode(token!)
+
+    const meal = await knex('meals')
+      .where({ user_id: sub })
+      .andWhere({ id })
+      .first()
+
+    reply.status(200).send(meal)
   })
 }
