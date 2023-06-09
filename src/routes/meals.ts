@@ -42,8 +42,8 @@ export async function mealsRoutes(app: FastifyInstance) {
       .orderBy('updated_at', 'asc')
       .groupBy('updated_at')
 
-    const groupedData = meals.reduce((acc: any, item) => {
-      const date = item.updated_at.split(' ')[0] // Extrai a data (parte antes do espaço)
+    const groupedMeals = meals.reduce((acc: any, item) => {
+      const date = item.updated_at.split(' ')[0] // ExtraiMeals (parte antes do espaço)
       if (!acc[date]) {
         acc[date] = []
       }
@@ -51,7 +51,7 @@ export async function mealsRoutes(app: FastifyInstance) {
       return acc
     }, {})
 
-    reply.status(200).send(groupedData)
+    reply.status(200).send(groupedMeals)
   })
 
   app.get('/meals/:id', async (request, reply) => {
@@ -70,5 +70,41 @@ export async function mealsRoutes(app: FastifyInstance) {
       .first()
 
     reply.status(200).send(meal)
+  })
+
+  app.put('/meals/:id', async (request, reply) => {
+    const paramsSchema = z.object({
+      id: z.string().uuid(),
+    })
+    const bodySchema = z.object({
+      name: z.string().optional(),
+      description: z.string().optional(),
+      isOnDiet: z.boolean().optional(),
+    })
+
+    const { token } = request.cookies
+
+    const { sub } = app.jwt.decode(token!)
+    const { id } = paramsSchema.parse(request.params)
+    const { name, isOnDiet, description } = bodySchema.parse(request.body)
+    const meal = await knex('meals')
+      .where({ id })
+      .andWhere({ user_id: sub })
+      .first()
+
+    if (!meal) {
+      throw new Error('Informacoes invalidas')
+    }
+
+    await knex('meals')
+      .update({
+        name: name || meal.name,
+        description: description || meal.description,
+        isOnDiet: isOnDiet || meal.isOnDiet,
+        updated_at: knex.fn.now(),
+      })
+      .where({ id })
+
+    return reply.status(201).send('Prato atualizado com sucesso')
   })
 }

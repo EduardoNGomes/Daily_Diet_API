@@ -96,10 +96,9 @@ export async function userRouter(app: FastifyInstance) {
           email,
           password,
           avatarUrl: avatarUrl || user!.avatarUrl,
-          created_at: user?.created_at,
           updated_at: knex.fn.now(),
         })
-        .where({ id })
+        .where({ id: sub })
 
       return reply.send('Dados do usuario atualizados com sucesso')
     },
