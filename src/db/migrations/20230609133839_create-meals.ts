@@ -3,7 +3,7 @@ import { Knex } from 'knex'
 export async function up(knex: Knex): Promise<void> {
   return knex.schema.createTable('meals', (table) => {
     table.uuid('id').notNullable().primary()
-    table.uuid('user_id').references('id').inTable('users').onDelete('cascade')
+    table.uuid('user_id').references('id').inTable('users').onDelete('CASCADE')
     table.string('name').notNullable()
     table.string('description')
     table.boolean('isOnDiet').defaultTo(false)

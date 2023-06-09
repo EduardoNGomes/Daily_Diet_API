@@ -14,6 +14,10 @@ export async function authRoutes(app: FastifyInstance) {
 
     const user = await knex('users').where({ email }).first()
 
+    if (!user) {
+      throw new Error('Usuario nao cadastado')
+    }
+
     const validPassword = await compare(password, user!.password)
 
     if (!validPassword) {
