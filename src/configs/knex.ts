@@ -5,6 +5,9 @@ export const config: Knex.Config = {
   connection: {
     filename: './src/db/database.db',
   },
+  pool: {
+    afterCreate: (conn, cb) => conn.run('PRAGMA foreign_keys = ON', cb),
+  },
   migrations: {
     extension: 'ts',
     directory: './src/db/migrations',
