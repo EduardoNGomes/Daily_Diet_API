@@ -2,14 +2,15 @@
 
 ## FEATURES
 
--[x] Deve ser possível criar um usuário -[x] Deve ser possível registrar uma refeição feita, com as seguintes informações:
+- [x] Deve ser possível criar um usuário 
+- [x] Deve ser possível registrar uma refeição feita, com as seguintes informações:
 
 - Nome
 - Descrição
 - Data e Hora
 - Está dentro ou não da dieta
 
--[x] O usuário só pode visualizar, editar e apagar as refeições o qual ele criou
+- [x] O usuário só pode visualizar, editar e apagar as refeições o qual ele criou
 
 - Deve ser possível recuperar as métricas de um usuário
   - [x] Quantidade total de refeições registradas
