@@ -21,5 +21,47 @@
 
 - Clone o repositório.
 - Instale as dependências necessárias usando npm install.
-- Configure a conexão do banco de dados no arquivo de configuração.
-- Execute a aplicação usando npm start.
+- Execute as migrates para criar o banco de dados usando npm run knex -- migrate:lastest.
+- Execute a aplicação usando npm run dev.
+
+## Endpoints da API
+
+Os seguintes endpoints estão disponíveis:
+
+##### User
+
+- POST /users: Cria um novo usuário.
+- GET /users: Recupera os detalhes de um usuário específico.
+- PUT /users: Atualiza os detalhes de um usuário específica.
+
+- GET /users/avatar/:avatarUrl : Recupera a imagem do usuário
+
+#### Authentication
+
+- POST /auth: Cria um token de autenticação para um usuário cadastrado.
+
+#### Meals
+
+- POST /meals: Registra uma nova refeição.
+- GET /meals: Recupera os detalhes de todas as refeições.
+- GET /meals/:id: Recupera os detalhes de uma refeição específica.
+- PUT /meals/:id: Atualiza os detalhes de uma refeição específica.
+- DELETE /meals/:id: Exclui uma refeição específica.
+
+#### Statistic
+
+- GET /statistic: Recupera as métricas de um usuário específico.
+
+#### Tecnologias Utilizadas
+
+- NodeJs
+- Fastify
+- Knex
+- FastifyMulter
+- FastifyJwt
+- Zod
+- SQLite
+
+# Contribuidores
+
+- Eduardo N Gomes
