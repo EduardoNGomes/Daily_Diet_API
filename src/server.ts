@@ -7,6 +7,7 @@ import jwt from '@fastify/jwt'
 import cookies from '@fastify/cookie'
 import { authRoutes } from './routes/auth'
 import { mealsRoutes } from './routes/meals'
+import { statisticRoute } from './routes/statistic'
 
 const app = fastify()
 
@@ -23,6 +24,7 @@ app.register(require('@fastify/static'), {
 app.register(authRoutes)
 app.register(userRouter)
 app.register(mealsRoutes)
+app.register(statisticRoute)
 
 app
   .listen({
