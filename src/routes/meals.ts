@@ -3,6 +3,21 @@ import { z } from 'zod'
 import { knex } from '../configs/knex'
 import { randomUUID } from 'crypto'
 
+interface MealsProps {
+  id: string
+  user_id: string
+  name: string
+  description: string
+  isOnDiet: boolean
+  created_at: string
+  updated_at: string
+}
+
+interface groupedMealsProps {
+  data: string
+  items: MealsProps[]
+}
+
 export async function mealsRoutes(app: FastifyInstance) {
   app.addHook('onRequest', async (request, reply) => {
     try {
@@ -42,16 +57,23 @@ export async function mealsRoutes(app: FastifyInstance) {
       .orderBy('updated_at', 'asc')
       .groupBy('updated_at')
 
-    const groupedMeals = meals.reduce((acc: any, item) => {
-      const date = item.updated_at.split(' ')[0] // ExtraiMeals (parte antes do espaço)
-      if (!acc[date]) {
-        acc[date] = []
-      }
-      acc[date].push(item)
-      return acc
-    }, {})
+    const seen = new Set()
 
-    reply.status(200).send(groupedMeals)
+    const groupedMeals: groupedMealsProps[] = []
+
+    meals.forEach((meal) => {
+      const key = `${meal.updated_at.split(' ')[0]}`
+
+      if (!seen.has(key)) {
+        groupedMeals.push({ data: key, items: [meal] })
+        seen.add(key)
+      } else {
+        const index = groupedMeals.findIndex((meal) => meal.data === key)
+        groupedMeals[index].items.push(meal)
+      }
+    })
+
+    return reply.status(200).send(groupedMeals)
   })
 
   app.get('/meals/:id', async (request, reply) => {
