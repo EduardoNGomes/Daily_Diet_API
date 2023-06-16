@@ -8,14 +8,17 @@ import cookies from '@fastify/cookie'
 import { authRoutes } from './routes/auth'
 import { mealsRoutes } from './routes/meals'
 import { statisticRoute } from './routes/statistic'
+import type { FastifyCookieOptions } from '@fastify/cookie'
+import cors from '@fastify/cors'
 
 const app = fastify()
 
 // Uploads file
+app.register(cors, { origin: true, credentials: true })
 app.register(multer.contentParser)
 
 app.register(jwt, { secret: 'loocked' })
-app.register(cookies)
+app.register(cookies, {} as FastifyCookieOptions)
 
 app.register(require('@fastify/static'), {
   root: join(__dirname, '../uploads'),

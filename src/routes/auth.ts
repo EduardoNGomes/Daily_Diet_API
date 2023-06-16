@@ -28,7 +28,13 @@ export async function authRoutes(app: FastifyInstance) {
       { name: user?.name, avatarUrl: user?.avatarUrl },
       { sub: user?.id, expiresIn: '10 days' },
     )
-
-    return reply.setCookie('token', token, { secure: true }).send()
+    if (token) {
+      return reply
+        .setCookie('token', token, { secure: true, path: '/' })
+        .code(200)
+        .send(token)
+    } else {
+      reply.code(401).send('your email or password wrong!')
+    }
   })
 }

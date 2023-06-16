@@ -38,7 +38,7 @@ export async function userRouter(app: FastifyInstance) {
         password: passwordHashed,
       })
 
-      return reply.send()
+      return reply.send('Usuário criado com sucesso')
     },
   )
 
