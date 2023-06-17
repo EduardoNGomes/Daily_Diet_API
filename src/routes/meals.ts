@@ -31,11 +31,15 @@ export async function mealsRoutes(app: FastifyInstance) {
       name: z.string(),
       description: z.string().optional(),
       isOnDiet: z.boolean(),
+      created_at: z.string().optional(),
+      updated_at: z.string().optional(),
     })
     const { token } = request.cookies
     const { sub } = app.jwt.decode(token!)
 
-    const { name, description, isOnDiet } = bodySchema.parse(request.body)
+    // eslint-disable-next-line camelcase
+    const { name, description, isOnDiet, created_at, updated_at } =
+      bodySchema.parse(request.body)
 
     await knex('meals').insert({
       id: randomUUID(),
@@ -43,6 +47,10 @@ export async function mealsRoutes(app: FastifyInstance) {
       name,
       description,
       isOnDiet,
+      // eslint-disable-next-line camelcase
+      created_at,
+      // eslint-disable-next-line camelcase
+      updated_at,
     })
 
     reply.status(201).send('Prato criado com sucesso')

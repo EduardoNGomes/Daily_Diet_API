@@ -52,7 +52,11 @@ export async function userRouter(app: FastifyInstance) {
 
       const user = await knex('users').where({ id: sub }).first()
 
-      return reply.send(user)
+      return reply.send({
+        name: user?.name,
+        avatarUrl: user?.avatarUrl,
+        email: user?.email,
+      })
     },
   )
 
