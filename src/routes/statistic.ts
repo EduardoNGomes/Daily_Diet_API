@@ -24,17 +24,24 @@ export async function statisticRoute(app: FastifyInstance) {
         }
       })
 
+      const percentageOnDiet = (
+        (mealsOnDiet.length * 100) /
+        meals.length
+      ).toFixed(2)
+
+      const percentageOffDiet = (
+        (mealsOffDiet.length * 100) /
+        meals.length
+      ).toFixed(2)
+
       const userStatistic = {
         allMeals: meals.length,
         mealsOnDiet: mealsOnDiet.length,
         mealsOffDiet: mealsOffDiet.length,
         dietSequence,
-        percentageOnDiet: ((mealsOnDiet.length * 100) / meals.length).toFixed(
-          2,
-        ),
-        percentageOffDiet: ((mealsOffDiet.length * 100) / meals.length).toFixed(
-          2,
-        ),
+        percentageOnDiet: Number(percentageOnDiet) > 0 ? percentageOnDiet : 0,
+        percentageOffDiet:
+          Number(percentageOffDiet) > 0 ? percentageOffDiet : 0,
       }
 
       return reply.send(userStatistic)
