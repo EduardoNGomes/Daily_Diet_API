@@ -52,26 +52,36 @@ export async function userRouter(app: FastifyInstance) {
 
       const user = await knex('users').where({ id: sub }).first()
 
-      return reply.send(user)
+      return reply.send({
+        name: user?.name,
+        avatarUrl: user?.avatarUrl,
+        email: user?.email,
+      })
     },
   )
 
   app.put(
     '/users',
-    { preHandler: (request) => request.jwtVerify() },
+    {
+      preHandler: [
+        (request) => request.jwtVerify(),
+        upload.single('avatarImage'),
+      ],
+    },
     async (request, reply) => {
       const bodySchema = z.object({
-        name: z.string().optional(),
+        name: z.string(),
         email: z.string(),
-        avatarUrl: z.string().optional(),
         oldPassword: z.string().min(8),
         newPassword: z.string().min(8),
       })
       const token = request.cookies.token
-      const { sub } = app.jwt.decode(token)
+      const { sub } = app.jwt.decode(token!)
 
-      const { name, email, oldPassword, newPassword, avatarUrl } =
-        bodySchema.parse(request.body)
+      const { name, email, oldPassword, newPassword } = bodySchema.parse(
+        request.body,
+      )
+      const image = request.file
 
       const user = await knex('users')
         .where({ id: sub })
@@ -92,10 +102,10 @@ export async function userRouter(app: FastifyInstance) {
 
       await knex('users')
         .update({
-          name: name || user!.name,
+          name,
           email,
           password,
-          avatarUrl: avatarUrl || user!.avatarUrl,
+          avatarUrl: image ? image.filename : user!.avatarUrl,
           updated_at: knex.fn.now(),
         })
         .where({ id: sub })

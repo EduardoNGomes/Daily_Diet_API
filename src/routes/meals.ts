@@ -31,11 +31,15 @@ export async function mealsRoutes(app: FastifyInstance) {
       name: z.string(),
       description: z.string().optional(),
       isOnDiet: z.boolean(),
+      created_at: z.string().optional(),
+      updated_at: z.string().optional(),
     })
     const { token } = request.cookies
     const { sub } = app.jwt.decode(token!)
 
-    const { name, description, isOnDiet } = bodySchema.parse(request.body)
+    // eslint-disable-next-line camelcase
+    const { name, description, isOnDiet, created_at, updated_at } =
+      bodySchema.parse(request.body)
 
     await knex('meals').insert({
       id: randomUUID(),
@@ -43,6 +47,10 @@ export async function mealsRoutes(app: FastifyInstance) {
       name,
       description,
       isOnDiet,
+      // eslint-disable-next-line camelcase
+      created_at,
+      // eslint-disable-next-line camelcase
+      updated_at,
     })
 
     reply.status(201).send('Prato criado com sucesso')
@@ -54,7 +62,7 @@ export async function mealsRoutes(app: FastifyInstance) {
 
     const meals = await knex('meals')
       .where({ user_id: sub })
-      .orderBy('updated_at', 'asc')
+      .orderBy('updated_at', 'desc')
       .groupBy('updated_at')
 
     const seen = new Set()
@@ -99,16 +107,20 @@ export async function mealsRoutes(app: FastifyInstance) {
       id: z.string().uuid(),
     })
     const bodySchema = z.object({
-      name: z.string().optional(),
-      description: z.string().optional(),
-      isOnDiet: z.boolean().optional(),
+      name: z.string(),
+      description: z.string(),
+      isOnDiet: z.boolean(),
+      updated_at: z.string(),
     })
 
     const { token } = request.cookies
 
     const { sub } = app.jwt.decode(token!)
     const { id } = paramsSchema.parse(request.params)
-    const { name, isOnDiet, description } = bodySchema.parse(request.body)
+    // eslint-disable-next-line camelcase
+    const { name, isOnDiet, description, updated_at } = bodySchema.parse(
+      request.body,
+    )
     const meal = await knex('meals')
       .where({ id })
       .andWhere({ user_id: sub })
@@ -120,10 +132,11 @@ export async function mealsRoutes(app: FastifyInstance) {
 
     await knex('meals')
       .update({
-        name: name || meal.name,
-        description: description || meal.description,
-        isOnDiet: isOnDiet || meal.isOnDiet,
-        updated_at: knex.fn.now(),
+        name,
+        description,
+        isOnDiet,
+        // eslint-disable-next-line camelcase
+        updated_at: updated_at || knex.fn.now(),
       })
       .where({ id })
 
