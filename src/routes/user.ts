@@ -114,7 +114,7 @@ export async function userRouter(app: FastifyInstance) {
         })
         .where({ id: sub })
 
-      return reply.status(204).send('Dados do usuario atualizados com sucesso')
+      return reply.send('Dados do usuário atualizados com sucesso')
     },
   )
 
