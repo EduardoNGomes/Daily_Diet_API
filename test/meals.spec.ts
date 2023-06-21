@@ -37,7 +37,7 @@ describe('Meals Routes', () => {
     token = responseAuth.headers['set-cookie'][0].split('=')[1].split(';')[0]
   })
 
-  it.skip('should create a new meal', async () => {
+  it('should create a new meal', async () => {
     const createMeals = await request(app.server)
       .post('/meals')
       .set('Authorization', 'Bearer ' + token)
@@ -51,7 +51,7 @@ describe('Meals Routes', () => {
 
     expect(createMeals.text).toEqual('Prato criado com sucesso')
   })
-  it.skip('should get all meals', async () => {
+  it('should get all meals', async () => {
     await request(app.server)
       .post('/meals')
       .set('Authorization', 'Bearer ' + token)
@@ -79,7 +79,7 @@ describe('Meals Routes', () => {
 
     expect(getAllMeals.body).toHaveLength(2)
   })
-  it.skip('should get a meal', async () => {
+  it('should get a meal', async () => {
     await request(app.server)
       .post('/meals')
       .set('Authorization', 'Bearer ' + token)
@@ -111,7 +111,7 @@ describe('Meals Routes', () => {
       }),
     )
   })
-  it.skip('should update meals', async () => {
+  it('should update meals', async () => {
     await request(app.server)
       .post('/meals')
       .set('Authorization', 'Bearer ' + token)
