@@ -38,7 +38,7 @@ export async function userRouter(app: FastifyInstance) {
         password: passwordHashed,
       })
 
-      return reply.send('Usuário criado com sucesso')
+      return reply.status(201).send('Usuário criado com sucesso')
     },
   )
 
@@ -75,8 +75,12 @@ export async function userRouter(app: FastifyInstance) {
         oldPassword: z.string().min(8),
         newPassword: z.string().min(8),
       })
-      const token = request.cookies.token
-      const { sub } = app.jwt.decode(token!)
+      // const token = request.cookies.token
+      // const { sub } = app.jwt.decode(token!)
+
+      const token2 = request.headers.authorization
+
+      const { sub } = app.jwt.decode(token2!.split(' ')[1])
 
       const { name, email, oldPassword, newPassword } = bodySchema.parse(
         request.body,
@@ -110,7 +114,7 @@ export async function userRouter(app: FastifyInstance) {
         })
         .where({ id: sub })
 
-      return reply.send('Dados do usuario atualizados com sucesso')
+      return reply.status(204).send('Dados do usuario atualizados com sucesso')
     },
   )
 
