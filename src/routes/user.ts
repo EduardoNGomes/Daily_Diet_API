@@ -41,14 +41,12 @@ export async function userRouter(app: FastifyInstance) {
       return reply.status(201).send('Usuário criado com sucesso')
     },
   )
-
-  // change id from params
   app.get(
     '/users',
     { preHandler: (request) => request.jwtVerify() },
     async (request, reply) => {
-      const token = request.cookies.token
-      const { sub } = app.jwt.decode(token!)
+      const token = request.headers.authorization
+      const { sub } = app.jwt.decode(token!.split(' ')[1])
 
       const user = await knex('users').where({ id: sub }).first()
 
@@ -59,7 +57,6 @@ export async function userRouter(app: FastifyInstance) {
       })
     },
   )
-
   app.put(
     '/users',
     {
@@ -75,12 +72,9 @@ export async function userRouter(app: FastifyInstance) {
         oldPassword: z.string().min(8),
         newPassword: z.string().min(8),
       })
-      // const token = request.cookies.token
-      // const { sub } = app.jwt.decode(token!)
 
-      const token2 = request.headers.authorization
-
-      const { sub } = app.jwt.decode(token2!.split(' ')[1])
+      const token = request.headers.authorization
+      const { sub } = app.jwt.decode(token!.split(' ')[1])
 
       const { name, email, oldPassword, newPassword } = bodySchema.parse(
         request.body,
@@ -117,7 +111,6 @@ export async function userRouter(app: FastifyInstance) {
       return reply.send('Dados do usuário atualizados com sucesso')
     },
   )
-
   // Get user Image
   app.get('/users/avatar/:avatarUrl', (request, reply) => {
     const paramsSchema = z.object({
