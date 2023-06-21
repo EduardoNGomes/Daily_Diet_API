@@ -73,4 +73,36 @@ describe('User Routes', () => {
       'Dados do usuário atualizados com sucesso',
     )
   })
+  it('should create a user', async () => {
+    await request(app.server)
+      .post('/users')
+      .attach(
+        'avatarImage',
+        path.resolve(__dirname, '../uploads/3d02592a68b6b1931d05-552397.jpg'),
+      )
+      .field('name', 'eduardo')
+      .field('email', 'eduardo@example.com')
+      .field('password', '12345678')
+
+    const responseAuth = await request(app.server).post('/auth').send({
+      email: 'eduardo@example.com',
+      password: '12345678',
+    })
+
+    const token = responseAuth.headers['set-cookie'][0]
+      .split('=')[1]
+      .split(';')[0]
+
+    const getUser = await request(app.server)
+      .get('/users')
+      .set('Authorization', 'Bearer ' + token)
+
+    expect(getUser.body).toEqual(
+      expect.objectContaining({
+        name: 'eduardo',
+        email: 'eduardo@example.com',
+        avatarUrl: expect.stringMatching(/^\S+$/),
+      }),
+    )
+  })
 })
