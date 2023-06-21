@@ -11,7 +11,7 @@ import { statisticRoute } from './routes/statistic'
 import type { FastifyCookieOptions } from '@fastify/cookie'
 import cors from '@fastify/cors'
 
-const app = fastify()
+export const app = fastify()
 
 // Uploads file
 app.register(cors, { origin: true, credentials: true })
@@ -35,5 +35,5 @@ app
     host: '0.0.0.0',
   })
   .then(() => {
-    console.log('listening on port: 3333')
+    console.log('listening on port: ' + env.PORT)
   })

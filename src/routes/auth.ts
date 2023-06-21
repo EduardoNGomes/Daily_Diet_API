@@ -24,15 +24,12 @@ export async function authRoutes(app: FastifyInstance) {
       throw new Error('Senha invalida')
     }
 
-    const token = app.jwt.sign(
-      { name: user?.name, avatarUrl: user?.avatarUrl },
-      { sub: user?.id, expiresIn: '10 days' },
-    )
+    const token = app.jwt.sign({ sub: user?.id, expiresIn: '10 days' })
     if (token) {
       return reply
         .setCookie('token', token, { secure: true, path: '/' })
         .code(200)
-        .send(token)
+        .send()
     } else {
       reply.code(401).send('your email or password wrong!')
     }

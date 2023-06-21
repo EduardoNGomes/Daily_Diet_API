@@ -34,8 +34,8 @@ export async function mealsRoutes(app: FastifyInstance) {
       created_at: z.string().optional(),
       updated_at: z.string().optional(),
     })
-    const { token } = request.cookies
-    const { sub } = app.jwt.decode(token!)
+    const token = request.headers.authorization
+    const { sub } = app.jwt.decode(token!.split(' ')[1])
 
     // eslint-disable-next-line camelcase
     const { name, description, isOnDiet, created_at, updated_at } =
@@ -57,8 +57,9 @@ export async function mealsRoutes(app: FastifyInstance) {
   })
 
   app.get('/meals', async (request, reply) => {
-    const { token } = request.cookies
-    const { sub } = app.jwt.decode(token!)
+    const token = request.headers.authorization
+
+    const { sub } = app.jwt.decode(token!.split(' ')[1])
 
     const meals = await knex('meals')
       .where({ user_id: sub })
@@ -91,8 +92,9 @@ export async function mealsRoutes(app: FastifyInstance) {
 
     const { id } = paramsSchema.parse(request.params)
 
-    const { token } = request.cookies
-    const { sub } = app.jwt.decode(token!)
+    const token = request.headers.authorization
+
+    const { sub } = app.jwt.decode(token!.split(' ')[1])
 
     const meal = await knex('meals')
       .where({ user_id: sub })
@@ -113,9 +115,9 @@ export async function mealsRoutes(app: FastifyInstance) {
       updated_at: z.string(),
     })
 
-    const { token } = request.cookies
+    const token = request.headers.authorization
+    const { sub } = app.jwt.decode(token!.split(' ')[1])
 
-    const { sub } = app.jwt.decode(token!)
     const { id } = paramsSchema.parse(request.params)
     // eslint-disable-next-line camelcase
     const { name, isOnDiet, description, updated_at } = bodySchema.parse(
@@ -140,7 +142,7 @@ export async function mealsRoutes(app: FastifyInstance) {
       })
       .where({ id })
 
-    return reply.status(201).send('Prato atualizado com sucesso')
+    return reply.status(200).send('Prato atualizado com sucesso')
   })
 
   app.delete('/meals/:id', async (request, reply) => {
@@ -148,8 +150,8 @@ export async function mealsRoutes(app: FastifyInstance) {
       id: z.string().uuid(),
     })
 
-    const { token } = request.cookies
-    const { sub } = app.jwt.decode(token!)
+    const token = request.headers.authorization
+    const { sub } = app.jwt.decode(token!.split(' ')[1])
 
     const { id } = paramsSchema.parse(request.params)
     await knex('meals').delete().where({ id }).andWhere({ user_id: sub })
