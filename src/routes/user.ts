@@ -5,7 +5,8 @@ import { knex } from '../configs/knex'
 import { randomUUID } from 'crypto'
 import { MULTER } from '../configs/multer'
 import multer from 'fastify-multer'
-import { DiskStorage } from '../provider/DiskStorage'
+import { DiskStorage } from '../utils/DiskStorage'
+import { AppError } from '../utils/AppError'
 
 const upload = multer(MULTER)
 
@@ -25,11 +26,11 @@ export async function userRouter(app: FastifyInstance) {
       const userAlreadyExists = await knex('users').where({ email }).first()
 
       if (userAlreadyExists) {
-        throw new Error('Email ja cadastrado')
+        throw new AppError('Email ja cadastrado', 400)
       }
 
       if (!image) {
-        throw new Error('Please choose a valid image')
+        throw new AppError('Please choose a valid image', 400)
       }
 
       const passwordHashed = await hash(password, 10)
@@ -88,13 +89,13 @@ export async function userRouter(app: FastifyInstance) {
         .first()
 
       if (!user) {
-        throw new Error('Unauthorized')
+        throw new AppError('Unauthorized')
       }
 
       const validPassword = await compare(oldPassword, user!.password)
 
       if (!validPassword) {
-        throw new Error('Senha invalida')
+        throw new AppError('Senha invalida', 401)
       }
       const diskStorage = new DiskStorage()
 

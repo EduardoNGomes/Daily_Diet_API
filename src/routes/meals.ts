@@ -2,6 +2,7 @@ import { FastifyInstance } from 'fastify'
 import { z } from 'zod'
 import { knex } from '../configs/knex'
 import { randomUUID } from 'crypto'
+import { AppError } from '../utils/AppError'
 
 interface MealsProps {
   id: string
@@ -121,7 +122,7 @@ export async function mealsRoutes(app: FastifyInstance) {
       .first()
 
     if (!meal) {
-      throw new Error('Informacoes invalidas')
+      throw new AppError('Informacoes invalidas', 409)
     }
 
     await knex('meals')

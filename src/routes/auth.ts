@@ -2,6 +2,7 @@ import { FastifyInstance } from 'fastify'
 import { z } from 'zod'
 import { knex } from '../configs/knex'
 import { compare } from 'bcrypt'
+import { AppError } from '../utils/AppError'
 
 export async function authRoutes(app: FastifyInstance) {
   app.post('/auth', async (request, reply) => {
@@ -15,13 +16,13 @@ export async function authRoutes(app: FastifyInstance) {
     const user = await knex('users').where({ email }).first()
 
     if (!user) {
-      throw new Error('Usuario nao cadastado')
+      throw new AppError('Usuario nao cadastado', 409)
     }
 
     const validPassword = await compare(password, user!.password)
 
     if (!validPassword) {
-      throw new Error('Senha invalida')
+      throw new AppError('Senha invalida', 409)
     }
 
     const token = app.jwt.sign({ sub: user?.id, expiresIn: '10 days' })

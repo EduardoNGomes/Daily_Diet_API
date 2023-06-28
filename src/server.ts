@@ -1,4 +1,4 @@
-import fastify from 'fastify'
+import fastify, { FastifyError, FastifyRequest, FastifyReply } from 'fastify'
 
 import { env } from './env'
 import { join } from 'path'
@@ -15,6 +15,7 @@ import { userRouter } from './routes/user'
 import { authRoutes } from './routes/auth'
 import { mealsRoutes } from './routes/meals'
 import { statisticRoute } from './routes/statistic'
+import { AppError } from './utils/AppError'
 
 export const app = fastify()
 
@@ -44,6 +45,23 @@ app.register(authRoutes)
 app.register(userRouter)
 app.register(mealsRoutes)
 app.register(statisticRoute)
+
+app.setErrorHandler(
+  (error: FastifyError, request: FastifyRequest, reply: FastifyReply) => {
+    if (error instanceof AppError) {
+      return reply.status(error.statusCode).send({
+        status: 'error',
+        message: error.message,
+      })
+    }
+    console.log(error)
+
+    return reply.status(500).send({
+      status: 'error',
+      message: 'Internal server error',
+    })
+  },
+)
 
 app
   .listen({
