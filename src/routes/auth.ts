@@ -7,7 +7,7 @@ import { AppError } from '../utils/AppError'
 export async function authRoutes(app: FastifyInstance) {
   app.post('/auth', async (request, reply) => {
     const bodySchema = z.object({
-      email: z.string(),
+      email: z.string().email(),
       password: z.string(),
     })
 
