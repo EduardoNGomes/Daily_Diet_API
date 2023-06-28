@@ -21,9 +21,12 @@
 ## Instalação
 
 - Clone o repositório.
-- Instale as dependências necessárias usando npm install.
-- Execute as migrates para criar o banco de dados usando npm run knex -- migrate:lastest.
-- Execute a aplicação usando npm run dev.
+- Instale as dependências necessárias usando ```npm install```.
+- Execute as migrates para criar o banco de dados usando ```npm run knex -- migrate:lastest```.
+- Execute a aplicação usando ```npm run dev```.
+
+## Para testar toda aplicacao utilize tambem o front-end
+[Daily Diet](https://github.com/EduardoNGomes/Daily_Diet_Front-end)
 
 ## Endpoints da API
 
