@@ -1,7 +1,7 @@
 import request from 'supertest'
 
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
-import { app } from '../src/server'
+import { app } from '../src/app'
 import path from 'path'
 import { execSync } from 'child_process'
 
