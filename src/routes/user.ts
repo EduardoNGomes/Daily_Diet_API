@@ -1,9 +1,13 @@
 import { FastifyInstance } from 'fastify'
 import { z } from 'zod'
-import { upload } from '../configs/multer'
 import { hash, compare } from 'bcrypt'
 import { knex } from '../configs/knex'
 import { randomUUID } from 'crypto'
+import { MULTER } from '../configs/multer'
+import multer from 'fastify-multer'
+import { DiskStorage } from '../provider/DiskStorage'
+
+const upload = multer(MULTER)
 
 export async function userRouter(app: FastifyInstance) {
   app.post(
@@ -92,6 +96,11 @@ export async function userRouter(app: FastifyInstance) {
       if (!validPassword) {
         throw new Error('Senha invalida')
       }
+      const diskStorage = new DiskStorage()
+
+      if (user.avatarUrl && image) {
+        await diskStorage.deleteFile(user.avatarUrl)
+      }
 
       const password = await hash(newPassword, 10)
 
@@ -100,7 +109,7 @@ export async function userRouter(app: FastifyInstance) {
           name,
           email,
           password,
-          avatarUrl: image ? image.filename : user!.avatarUrl,
+          avatarUrl: image ? image.filename : user.avatarUrl,
           updated_at: knex.fn.now(),
         })
         .where({ id: sub })

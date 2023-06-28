@@ -1,27 +1,43 @@
 import fastify from 'fastify'
+
 import { env } from './env'
-import multer from 'fastify-multer'
-import { userRouter } from './routes/user'
 import { join } from 'path'
-import jwt from '@fastify/jwt'
+
+import type { FastifyCookieOptions } from '@fastify/cookie'
 import cookies from '@fastify/cookie'
+import cors from '@fastify/cors'
+import jwt from '@fastify/jwt'
+
+import multer from 'fastify-multer'
+import { TMP_FOLDER } from './configs/multer'
+
+import { userRouter } from './routes/user'
 import { authRoutes } from './routes/auth'
 import { mealsRoutes } from './routes/meals'
 import { statisticRoute } from './routes/statistic'
-import type { FastifyCookieOptions } from '@fastify/cookie'
-import cors from '@fastify/cors'
 
 export const app = fastify()
 
-// Uploads file
-app.register(cors, { origin: true, credentials: true })
+app.register(cors, {
+  origin: true,
+  credentials: true,
+  allowedHeaders: [
+    'Origin',
+    'X-Requested-With',
+    'Content-Type',
+    'Accept',
+    'Authorization',
+    'Cookie',
+  ],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+})
 app.register(multer.contentParser)
 
 app.register(jwt, { secret: 'loocked' })
 app.register(cookies, {} as FastifyCookieOptions)
 
 app.register(require('@fastify/static'), {
-  root: join(__dirname, '../uploads'),
+  root: join(TMP_FOLDER),
 })
 // Routes
 app.register(authRoutes)
