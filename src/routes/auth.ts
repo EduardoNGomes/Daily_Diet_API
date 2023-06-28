@@ -25,11 +25,12 @@ export async function authRoutes(app: FastifyInstance) {
     }
 
     const token = app.jwt.sign({ sub: user?.id, expiresIn: '10 days' })
+
     if (token) {
       return reply
         .setCookie('token', token, { secure: true, path: '/' })
         .code(200)
-        .send()
+        .send({ message: 'Authenticated', token })
     } else {
       reply.code(401).send('your email or password wrong!')
     }

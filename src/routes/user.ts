@@ -45,8 +45,7 @@ export async function userRouter(app: FastifyInstance) {
     '/users',
     { preHandler: (request) => request.jwtVerify() },
     async (request, reply) => {
-      const token = request.headers.authorization
-      const { sub } = app.jwt.decode(token!.split(' ')[1])
+      const { sub } = request.user
 
       const user = await knex('users').where({ id: sub }).first()
 
@@ -72,9 +71,7 @@ export async function userRouter(app: FastifyInstance) {
         oldPassword: z.string().min(8),
         newPassword: z.string().min(8),
       })
-
-      const token = request.headers.authorization
-      const { sub } = app.jwt.decode(token!.split(' ')[1])
+      const { sub } = request.user
 
       const { name, email, oldPassword, newPassword } = bodySchema.parse(
         request.body,
