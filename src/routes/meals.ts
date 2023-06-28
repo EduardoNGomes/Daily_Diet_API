@@ -2,6 +2,7 @@ import { FastifyInstance } from 'fastify'
 import { z } from 'zod'
 import { knex } from '../configs/knex'
 import { randomUUID } from 'crypto'
+import { AppError } from '../utils/AppError'
 
 interface MealsProps {
   id: string
@@ -34,8 +35,7 @@ export async function mealsRoutes(app: FastifyInstance) {
       created_at: z.string().optional(),
       updated_at: z.string().optional(),
     })
-    const token = request.headers.authorization
-    const { sub } = app.jwt.decode(token!.split(' ')[1])
+    const { sub } = request.user
 
     // eslint-disable-next-line camelcase
     const { name, description, isOnDiet, created_at, updated_at } =
@@ -57,9 +57,7 @@ export async function mealsRoutes(app: FastifyInstance) {
   })
 
   app.get('/meals', async (request, reply) => {
-    const token = request.headers.authorization
-
-    const { sub } = app.jwt.decode(token!.split(' ')[1])
+    const { sub } = request.user
 
     const meals = await knex('meals')
       .where({ user_id: sub })
@@ -91,10 +89,7 @@ export async function mealsRoutes(app: FastifyInstance) {
     })
 
     const { id } = paramsSchema.parse(request.params)
-
-    const token = request.headers.authorization
-
-    const { sub } = app.jwt.decode(token!.split(' ')[1])
+    const { sub } = request.user
 
     const meal = await knex('meals')
       .where({ user_id: sub })
@@ -114,9 +109,7 @@ export async function mealsRoutes(app: FastifyInstance) {
       isOnDiet: z.boolean(),
       updated_at: z.string(),
     })
-
-    const token = request.headers.authorization
-    const { sub } = app.jwt.decode(token!.split(' ')[1])
+    const { sub } = request.user
 
     const { id } = paramsSchema.parse(request.params)
     // eslint-disable-next-line camelcase
@@ -129,7 +122,7 @@ export async function mealsRoutes(app: FastifyInstance) {
       .first()
 
     if (!meal) {
-      throw new Error('Informacoes invalidas')
+      throw new AppError('Informacoes invalidas', 409)
     }
 
     await knex('meals')
@@ -149,9 +142,7 @@ export async function mealsRoutes(app: FastifyInstance) {
     const paramsSchema = z.object({
       id: z.string().uuid(),
     })
-
-    const token = request.headers.authorization
-    const { sub } = app.jwt.decode(token!.split(' ')[1])
+    const { sub } = request.user
 
     const { id } = paramsSchema.parse(request.params)
     await knex('meals').delete().where({ id }).andWhere({ user_id: sub })

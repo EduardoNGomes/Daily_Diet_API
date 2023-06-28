@@ -6,8 +6,7 @@ export async function statisticRoute(app: FastifyInstance) {
     '/statistic',
     { preHandler: (request) => request.jwtVerify() },
     async (request, reply) => {
-      const token = request.headers.authorization
-      const { sub } = app.jwt.decode(token!.split(' ')[1])
+      const { sub } = request.user
 
       const meals = await knex('meals').where({ user_id: sub })
 
