@@ -10,7 +10,8 @@ export const config: Knex.Config = {
         }
       : env.DATABASE_URL,
   pool: {
-    afterCreate: (conn, cb) => conn.run('PRAGMA foreign_keys = ON', cb),
+    afterCreate: (conn: any, cb: any) =>
+      conn.run('PRAGMA foreign_keys = ON', cb),
   },
   migrations: {
     extension: 'ts',
