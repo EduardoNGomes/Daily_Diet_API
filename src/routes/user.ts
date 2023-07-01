@@ -23,7 +23,9 @@ export async function userRouter(app: FastifyInstance) {
       const { name, email, password } = bodySchema.parse(request.body)
       const image = request.file
 
-      const userAlreadyExists = await knex('users').where({ email }).first()
+      const userAlreadyExists = await knex('users')
+        .where({ email: email.toLowerCase() })
+        .first()
 
       if (userAlreadyExists) {
         throw new AppError('Email ja cadastrado', 400)
@@ -38,7 +40,7 @@ export async function userRouter(app: FastifyInstance) {
       await knex('users').insert({
         id: randomUUID(),
         name,
-        email,
+        email: email.toLowerCase(),
         avatarUrl: image.filename,
         password: passwordHashed,
       })
@@ -85,7 +87,7 @@ export async function userRouter(app: FastifyInstance) {
 
       const user = await knex('users')
         .where({ id: sub })
-        .andWhere({ email })
+        .andWhere({ email: email.toLowerCase() })
         .first()
 
       if (!user) {
@@ -108,7 +110,7 @@ export async function userRouter(app: FastifyInstance) {
       await knex('users')
         .update({
           name,
-          email,
+          email: email.toLowerCase(),
           password,
           avatarUrl: image ? image.filename : user.avatarUrl,
           updated_at: knex.fn.now(),

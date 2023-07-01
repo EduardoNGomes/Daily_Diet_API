@@ -13,7 +13,9 @@ export async function authRoutes(app: FastifyInstance) {
 
     const { email, password } = bodySchema.parse(request.body)
 
-    const user = await knex('users').where({ email }).first()
+    const user = await knex('users')
+      .where({ email: email.toLowerCase() })
+      .first()
 
     if (!user) {
       throw new AppError('Usuario nao cadastado', 409)
